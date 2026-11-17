@@ -1,16 +1,4 @@
-"""
-Job Finder - a single-page, worldwide job search app.
 
-Powered by the JSearch API on RapidAPI, which aggregates live listings from
-Indeed, LinkedIn, Glassdoor, ZipRecruiter and more.
-
-Setup:
-    1. Create a file named  .env  next to this app.py containing one line:
-           RAPIDAPI_KEY=your_rapidapi_key_here
-       (JSEARCH_API_KEY is also accepted as the variable name.)
-    2. pip install flask requests
-    3. python app.py
-"""
 
 import logging
 import os
@@ -21,9 +9,7 @@ from urllib.parse import urlparse, quote_plus
 import requests
 from flask import Flask, render_template, request
 
-# --------------------------------------------------------------------------- #
-# Configuration
-# --------------------------------------------------------------------------- #
+
 
 BASE_DIR = Path(__file__).resolve().parent
 
@@ -154,9 +140,7 @@ POPULAR_SEARCHES = [
 class JobSearchError(Exception):
     """Raised with the real, user-readable reason a job search failed."""
 
-# --------------------------------------------------------------------------- #
-# Helpers
-# --------------------------------------------------------------------------- #
+
 
 def get_api_key():
     """Return (key, variable_name) from the environment / .env, or ('', None)."""
@@ -275,8 +259,7 @@ def normalize_job(raw):
     if not title:
         return None
 
-    # FIX: Don't throw away jobs just because apply link is missing.
-    # Try every possible link field, then fall back to a Google search link.
+    
     apply_link = (
         safe_url(raw.get("job_apply_link"))
         or safe_url(raw.get("job_google_link"))
@@ -419,8 +402,7 @@ def fetch_jobs(query):
         logger.error("JSearch reported an error in the body: %s", response.text[:500])
         raise JobSearchError(f"JSearch reported an error: {message}")
 
-    # FIX: Handle all shapes search-v2 can return: list, dict with data list,
-    # dict with data dict containing jobs, or top-level jobs list.
+    
     results = None
     if isinstance(payload, list):
         results = payload
@@ -445,9 +427,6 @@ def fetch_jobs(query):
         logger.info("Sample raw item keys: %s", list(results[0].keys())[:15] if isinstance(results[0], dict) else type(results[0]))
     return jobs
 
-# --------------------------------------------------------------------------- #
-# Routes
-# --------------------------------------------------------------------------- #
 
 @app.route("/", methods=["GET", "POST"])
 def index():
